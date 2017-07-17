@@ -68,7 +68,13 @@ function extractPlar(){
 function createPlar(){
 	path=$1;
 	name=$2;
-	pack=$path"/target/"$name$(getExt "");
+	target=$path"/target";
+	pack=$target"/"$name$(getExt "");
+	
+	if [[ -f !$target ]]; then
+		makeD $target;
+	fi;
+	
 	OPYFILE_DISABLE=true tar -c --exclude-from=$path/.gitignore -vzf  $pack  --directory $path  ./
 };
 
