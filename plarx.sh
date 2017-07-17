@@ -1,4 +1,4 @@
-#/usr/bin/bash
+#!/usr/bin/env bash
 #####
 #    - Create        create     0
 #    - Run 			   run		1
@@ -149,7 +149,6 @@ if [[ -n "$ttodo" ]] ;then
 		;;
 		"1") 
 			tmpPath=$(mktemp -d  /tmp/${MYNAME}XXXXXXXXXX) || exit 1;
-			echo $tmpPath;
 			extractPlar  $MYPATH  $MYNAME $tmpPath;	 
 			runPlar  $MYPATH  $MYNAME  $tmpPath;	 
 		;;
