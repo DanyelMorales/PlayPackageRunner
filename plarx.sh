@@ -6,14 +6,15 @@
 #    - Extract Only   extract 3
  #	  Author:  DANIEL VERA MORALES 
 #####
-
-if [[ -f "./plarx.cfg" ]]; then
-	source "./plarx.cfg";
+currentdirsc="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/plarx.cfg";
+if [[ -f $currentdirsc ]]; then
+	source $currentdirsc;
 else
 	playcommand="play";
 fi;
 
 ttodo="";
+
 
 ###############################################################
 #								 								FUNCTIONS
