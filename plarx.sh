@@ -72,11 +72,11 @@ function createPlar(){
 	target=$path"/target";
 	pack=$target"/"$name$(getExt "");
 	
-	if [[ -f !$target ]]; then
-		makeD $target;
+	if [[ ! -f $target ]]; then
+		mkdir $target;
 	fi;
 	
-	OPYFILE_DISABLE=true tar -c --exclude-from=$path/.gitignore -vzf  $pack  --directory $path  ./
+	OPYFILE_DISABLE=true tar -c --exclude='.git' --exclude-from=$path/.gitignore -vzf  $pack  --directory $path  ./
 };
 
 ###############################################################
