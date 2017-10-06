@@ -8,7 +8,6 @@
  #	  Author:  DANIEL VERA MORALES 
 #####
 currentdirsc="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/plarx.cfg";
-
 # read configs from any configfile in the current working path otherwise it will be defined
 if [[ -f $currentdirsc ]]; then
 	source $currentdirsc;
@@ -114,7 +113,7 @@ function showHeader(){
 	echo -e "=======================================";
 	echo -e "=====    PLAY PACKAGER & RUNNER";
 	echo -e "=====    Daniel Vera Morales";
-	echo -e "=====    \tusage: plarx help";
+	echo -e "=====    usage: plarx help";
 	echo -e "=======================================";
 };
 function showDocumentation(){
@@ -159,8 +158,7 @@ while [ "$#" -gt 1 ]; do
 				;;	
 		    -n)
 				 MYNAME=$2;
-				;;	
-			 -e 
+				;;	 
 			*)
 			  showError "[-] Plz. Provide play directory or package's name";
 	esac
