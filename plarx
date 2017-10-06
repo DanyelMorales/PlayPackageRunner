@@ -5,6 +5,7 @@
 #    - Extract & Run 		erun			2
 #    - Extract Only   		extract 		3
 #    - clean  project ns 	clean     	4
+#    - clean  and run 	 	rclean     	5
  #	  Author:  DANIEL VERA MORALES 
 #####
 currentdirsc="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/plarx.cfg";
@@ -143,6 +144,9 @@ case "$1" in
 				 ;;	
 			"clean") 
 				 ttodo="4";
+				 ;;		
+			"rclean") 
+				 ttodo="5";
 				 ;;	
 			"help") 
 				 showDocumentation "";
@@ -168,6 +172,27 @@ done
 };
 
 ###############################################################
+# 														TASKS
+###############################################################
+
+function do_extract(){
+	path=$1;
+	mypath=$2;
+	myname=$3;
+	makeD $path;
+	extractPlar  $mypath  $myname $path;	 
+};
+
+function do_create(){
+	tmpPrefixed=$1;
+	mypath=$2;
+	myname=$3;
+	tmpPath=$(mktemp -d  ${tmpPrefixed}XXXXXXXXXX) || exit 1;
+	extractPlar  $mypath  $myname $tmpPath;	 
+};
+
+
+###############################################################
 # 														MAIN
 ###############################################################
 showMenu $@;
@@ -183,21 +208,22 @@ if [[ -n "$ttodo" ]] ;then
 			createPlar  $MYPATH  $MYNAME $path;
 		;;
 		"1") 
-			tmpPath=$(mktemp -d  ${tmpPrefixed}XXXXXXXXXX) || exit 1;
-			extractPlar  $MYPATH  $MYNAME $tmpPath;	 
+			do_create $tmpPrefixed $MYPATH  $MYNAME;
 			runPlar  $MYPATH  $MYNAME  $tmpPath $usingrun;	 
 		;;
 		"2")		
-			makeD $path;
-			extractPlar  $MYPATH  $MYNAME $path;	 
+			do_extract $path  $MYPATH  $MYNAME;
 			runPlar  $MYPATH  $MYNAME $path $usingrun;	 
 		;;
 		"3")
-			makeD $path;
-			extractPlar  $MYPATH  $MYNAME $path;	 
+			do_extract $path  $MYPATH  $MYNAME;
 		;;
 		"4") 
 			cleanTmpPlars $tmpDir $tmppackname;
+		;;		
+		"5") 
+			cleanTmpPlars $tmpDir $tmppackname&&do_create $tmpPrefixed $MYPATH  $MYNAME;
+			runPlar  $MYPATH  $MYNAME $path $usingrun;	 
 		;;
 	esac
 	else
