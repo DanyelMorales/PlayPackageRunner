@@ -1,17 +1,27 @@
 #!/usr/bin/env bash
 #####
-#    - Create        create     0
-#    - Run 			   run		1
-#    - Extract & Run erun	2
-#    - Extract Only   extract 3
+#    - Create        			create   	0
+#    - Run 			   			run			1
+#    - Extract & Run 		erun			2
+#    - Extract Only   		extract 		3
+#    - clean  project ns 	clean     	4
  #	  Author:  DANIEL VERA MORALES 
 #####
 currentdirsc="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/plarx.cfg";
+
+# read configs from any configfile in the current working path otherwise it will be defined
 if [[ -f $currentdirsc ]]; then
 	source $currentdirsc;
 else
 	playcommand="play";
 fi;
+
+# export USING var with any play command to be executed
+if [ -z "$USING" ]; then 
+	usingrun="run"
+else
+	usingrun=$USING;
+fi
 
 ttodo="";
 
@@ -55,7 +65,8 @@ function runPlar(){
 	name=$2;
 	pack=$name$(getExt "");
 	path=$3;
-	cd $path&&$playcommand dependencies&&$playcommand run;
+	runcommand=$4;
+	cd $path&&$playcommand dependencies&&$playcommand $runcommand;
 };
 
 function extractPlar(){
@@ -64,6 +75,16 @@ function extractPlar(){
 		pack=$name$(getExt "");
 		path=$3;
 		tar -xvzf $ind"/"$pack --directory $path;
+};
+
+function cleanTmpPlars(){
+		where=$1;
+		pathname=$2;
+		list="$(find $where -name "$pathname*")";
+		for dir in ${list[@]}
+		do
+			rm -rf $dir;
+		done
 };
 
 function createPlar(){
@@ -93,6 +114,7 @@ function showHeader(){
 	echo -e "=======================================";
 	echo -e "=====    PLAY PACKAGER & RUNNER";
 	echo -e "=====    Daniel Vera Morales";
+	echo -e "=====    \tusage: plarx help";
 	echo -e "=======================================";
 };
 function showDocumentation(){
@@ -119,7 +141,10 @@ case "$1" in
 				;;	
 			"extract") 
 				 ttodo="3";
-				;;			
+				 ;;	
+			"clean") 
+				 ttodo="4";
+				 ;;	
 			"help") 
 				 showDocumentation "";
 				;;	
@@ -135,6 +160,7 @@ while [ "$#" -gt 1 ]; do
 		    -n)
 				 MYNAME=$2;
 				;;	
+			 -e 
 			*)
 			  showError "[-] Plz. Provide play directory or package's name";
 	esac
@@ -150,23 +176,30 @@ showMenu $@;
 if [[ -n "$ttodo" ]] ;then
 	showHeader;
 	path=$MYPATH"/"$MYNAME;
+	appPrefix="plar-";
+	tmpDir="/tmp/";
+	tmppackname=$appPrefix$MYNAME;
+	tmpPrefixed=$tmpDir$tmppackname;
 	case "$ttodo" in
 		"0")
 			createPlar  $MYPATH  $MYNAME $path;
 		;;
 		"1") 
-			tmpPath=$(mktemp -d  /tmp/${MYNAME}XXXXXXXXXX) || exit 1;
+			tmpPath=$(mktemp -d  ${tmpPrefixed}XXXXXXXXXX) || exit 1;
 			extractPlar  $MYPATH  $MYNAME $tmpPath;	 
-			runPlar  $MYPATH  $MYNAME  $tmpPath;	 
+			runPlar  $MYPATH  $MYNAME  $tmpPath $usingrun;	 
 		;;
 		"2")		
 			makeD $path;
 			extractPlar  $MYPATH  $MYNAME $path;	 
-			runPlar  $MYPATH  $MYNAME $path;	 
+			runPlar  $MYPATH  $MYNAME $path $usingrun;	 
 		;;
 		"3")
 			makeD $path;
 			extractPlar  $MYPATH  $MYNAME $path;	 
+		;;
+		"4") 
+			cleanTmpPlars $tmpDir $tmppackname;
 		;;
 	esac
 	else
